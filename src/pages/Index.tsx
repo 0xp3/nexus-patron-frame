@@ -1,9 +1,26 @@
+import { useState, useMemo } from "react";
 import Header from "@/components/Header";
 import ContentCard from "@/components/ContentCard";
+import CategoryFilter from "@/components/CategoryFilter";
+import { Button } from "@/components/ui/button";
+import type { CategoryType } from "@/components/CategoryFilter";
 import creatorHero from "@/assets/creator-hero.jpg";
 
+interface ContentItem {
+  id: number;
+  title: string;
+  creator: string;
+  image: string;
+  supporters: number;
+  description: string;
+  avatarUrl: string;
+  category: CategoryType;
+}
+
 const Index = () => {
-  const contentItems = [
+  const [selectedCategory, setSelectedCategory] = useState<CategoryType>("all");
+
+  const contentItems: ContentItem[] = [
     {
       id: 1,
       title: "Digital Art Masterclass",
@@ -12,6 +29,7 @@ const Index = () => {
       supporters: 1234,
       description: "Learn advanced digital painting techniques and create stunning artwork with professional tips and tricks.",
       avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex",
+      category: "art",
     },
     {
       id: 2,
@@ -21,6 +39,7 @@ const Index = () => {
       supporters: 892,
       description: "Complete guide to building decentralized applications on blockchain with hands-on projects.",
       avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah",
+      category: "tech",
     },
     {
       id: 3,
@@ -30,6 +49,7 @@ const Index = () => {
       supporters: 2456,
       description: "Behind the scenes of hit music production. Learn mixing, mastering, and composition from a pro.",
       avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=Jordan",
+      category: "music",
     },
     {
       id: 4,
@@ -39,6 +59,7 @@ const Index = () => {
       supporters: 678,
       description: "Unlock your storytelling potential with weekly writing prompts and community feedback sessions.",
       avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=Maya",
+      category: "writing",
     },
     {
       id: 5,
@@ -48,6 +69,7 @@ const Index = () => {
       supporters: 1567,
       description: "Master 3D modeling and animation with Blender. From basics to advanced character rigging.",
       avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=Chris",
+      category: "video",
     },
     {
       id: 6,
@@ -57,28 +79,75 @@ const Index = () => {
       supporters: 3421,
       description: "Explore the art of photography through exclusive tutorials, critiques, and location shoots.",
       avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=Emma",
+      category: "art",
+    },
+    {
+      id: 7,
+      title: "Smart Contract Security",
+      creator: "Dev Martinez",
+      image: "https://images.unsplash.com/photo-1639322537228-f710d846310a?w=800&h=450&fit=crop",
+      supporters: 1123,
+      description: "Learn to audit and secure smart contracts on Ethereum and other blockchains.",
+      avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=Dev",
+      category: "tech",
+    },
+    {
+      id: 8,
+      title: "Indie Game Dev Journey",
+      creator: "Sam Taylor",
+      image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&h=450&fit=crop",
+      supporters: 2890,
+      description: "Follow my journey creating indie games from concept to launch with Unity and Unreal.",
+      avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sam",
+      category: "video",
     },
   ];
+
+  // Filter content based on selected category
+  const filteredContent = useMemo(() => {
+    if (selectedCategory === "all") {
+      return contentItems;
+    }
+    return contentItems.filter((item) => item.category === selectedCategory);
+  }, [selectedCategory]);
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
 
       <main className="container px-4 py-6 md:px-6 md:py-8">
-        <section className="mb-8">
+        <section className="mb-6">
           <h1 className="mb-2 text-2xl font-bold text-foreground md:text-3xl lg:text-4xl">
             Discover Creators
           </h1>
-          <p className="text-muted-foreground md:text-lg">
+          <p className="text-muted-foreground md:text-lg mb-6">
             Support amazing creators and get exclusive content
           </p>
+
+          <CategoryFilter
+            selectedCategory={selectedCategory}
+            onCategoryChange={setSelectedCategory}
+          />
         </section>
 
         <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:gap-6">
-          {contentItems.map((item) => (
+          {filteredContent.map((item) => (
             <ContentCard key={item.id} {...item} />
           ))}
         </section>
+
+        {filteredContent.length === 0 && (
+          <div className="flex flex-col items-center justify-center py-12">
+            <p className="text-lg text-muted-foreground">No creators found in this category</p>
+            <Button
+              variant="outline"
+              onClick={() => setSelectedCategory("all")}
+              className="mt-4 rounded-2xl"
+            >
+              View All Creators
+            </Button>
+          </div>
+        )}
       </main>
     </div>
   );
