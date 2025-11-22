@@ -19,6 +19,7 @@ interface ContentItem {
 
 const Index = () => {
   const [selectedCategory, setSelectedCategory] = useState<CategoryType>("all");
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   const contentItems: ContentItem[] = [
     {
@@ -103,17 +104,32 @@ const Index = () => {
     },
   ];
 
-  // Filter content based on selected category
+  // Filter content based on selected category and search query
   const filteredContent = useMemo(() => {
-    if (selectedCategory === "all") {
-      return contentItems;
+    let filtered = contentItems;
+
+    // Filter by category
+    if (selectedCategory !== "all") {
+      filtered = filtered.filter((item) => item.category === selectedCategory);
     }
-    return contentItems.filter((item) => item.category === selectedCategory);
-  }, [selectedCategory]);
+
+    // Filter by search query
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(
+        (item) =>
+          item.title.toLowerCase().includes(query) ||
+          item.creator.toLowerCase().includes(query) ||
+          item.description.toLowerCase().includes(query)
+      );
+    }
+
+    return filtered;
+  }, [selectedCategory, searchQuery]);
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+      <Header onSearchChange={setSearchQuery} searchValue={searchQuery} />
 
       <main className="container px-4 py-6 md:px-6 md:py-8">
         <section className="mb-6">
@@ -138,13 +154,20 @@ const Index = () => {
 
         {filteredContent.length === 0 && (
           <div className="flex flex-col items-center justify-center py-12">
-            <p className="text-lg text-muted-foreground">No creators found in this category</p>
+            <p className="text-lg text-muted-foreground">
+              {searchQuery
+                ? `No creators found for "${searchQuery}"`
+                : "No creators found in this category"}
+            </p>
             <Button
               variant="outline"
-              onClick={() => setSelectedCategory("all")}
+              onClick={() => {
+                setSearchQuery("");
+                setSelectedCategory("all");
+              }}
               className="mt-4 rounded-2xl"
             >
-              View All Creators
+              Clear Filters
             </Button>
           </div>
         )}
