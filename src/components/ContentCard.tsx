@@ -2,6 +2,7 @@ import { Heart, Users } from "lucide-react";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import type { CategoryType } from "./CategoryFilter";
 
 interface ContentCardProps {
   title: string;
@@ -10,9 +11,10 @@ interface ContentCardProps {
   supporters: number;
   description: string;
   avatarUrl?: string;
+  category: CategoryType;
 }
 
-const ContentCard = ({ title, creator, image, supporters, description, avatarUrl }: ContentCardProps) => {
+const ContentCard = ({ title, creator, image, supporters, description, avatarUrl, category }: ContentCardProps) => {
   return (
     <Card className="group overflow-hidden rounded-3xl border-border transition-all hover:shadow-lg hover:shadow-primary/10">
       <CardHeader className="p-0">
